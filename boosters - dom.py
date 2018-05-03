@@ -7,7 +7,7 @@ import time
 
 sets = Set.all()
 sets_names = []
-selected_set = 'dom'
+selected_set = ''
 number_of_packs = 0
 
 for i in sets:
@@ -15,7 +15,6 @@ for i in sets:
 
 # || User input and Interface ||
 # ||||||||||||||||||||||||||||||
-
 
 
 class KeyboardDisable():
@@ -86,15 +85,6 @@ def choose_quantity():
         choose_quantity()
 
 
-def main():
-    """Runs the menu and set up"""
-    print("")
-    print("##################################################")
-    print("")
-    choose_set()
-    choose_quantity()
-
-
 # This sets the object to disable the keyboard. Used in type_out().
 disable_typing = KeyboardDisable()
 
@@ -103,31 +93,45 @@ disable_typing = KeyboardDisable()
 # ||||||||||||||||||||||
 
 
-def create_and_open(filename, mode):
-    os.makedirs(current_pack, exist_ok=True)
+def create_and_open(pack_name, filename, mode):
+    os.makedirs(pack_name, exist_ok=True)
     return open(filename, mode)
 
 
 def pack_number():
     n = 1
-    f = Path(str(n))
+    f = Path(str(n) + ' ' + selected_set)
     while os.path.exists(f):
         n += 1
-        f = Path(str(n))
-    return str(n) + '/'
+        f = Path(str(n) + ' ' + selected_set)
+    return str(n) + ' ' + selected_set + '/'
 
 
-card = Set.generate_booster(selected_set)
-current_pack = pack_number()
-counter = 1
+def generate_packs(selected_set, quantity):
+    while quantity > 0:
+        counter = 1
+        card = Set.generate_booster(selected_set)
+        current_pack = pack_number()
+        for i in card:
+            img_data = requests.get(
+                'http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=' +
+                str(i.multiverse_id) + '&type=card').content
+            with create_and_open(current_pack, current_pack + str(counter) + ' ' + str(i.name) + '.jpg', 'wb') as f:
+                f.write(img_data)
+                counter += 1
+    quantity -= 1
 
-def generate_pack():
 
-    for i in card:
-        img_data = requests.get(
-            'http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=' +
-            str(i.multiverse_id) + '&type=card').content
-        with create_and_open(current_pack + str(counter) + ' ' + str(i.name) + '.jpg', 'wb') as f:
-            f.write(img_data)
-            counter += 1
+def main():
+    """Runs the menu and set up"""
+    print("")
+    print("##################################################")
+    print("")
+    the_loop = True
+    while the_loop:
+        choose_set()
+        choose_quantity()
+        generate_packs(selected_set, number_of_packs)
 
+
+main()
