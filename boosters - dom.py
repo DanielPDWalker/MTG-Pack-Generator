@@ -7,8 +7,7 @@ import time
 
 sets = Set.all()
 sets_names = []
-selected_set = ''
-number_of_packs = 0
+
 
 for i in sets:
     sets_names.append(i.name.lower())
@@ -63,23 +62,22 @@ def select_input_set(saved_input):
 
 
 def choose_set():
-    global selected_set
     type_out("Please enter a set you would like a booster pack from:")
     saved_input = input()
     if saved_input.lower() in sets_names:
-        selected_set = select_input_set(saved_input.lower())
+        return select_input_set(saved_input.lower())
     else:
         type_out("Sorry but {} is not a set.".format(saved_input))
         choose_set()
 
 
 def choose_quantity():
-    global number_of_packs
     type_out("How many boosters would you like to generate?")
     type_out("(Please note each booster takes roughly 15 seconds).")
     saved_input = input()
     try:
         saved_input = int(saved_input)
+        return saved_input
     except:
         type_out("Please enter only whole numerical values.")
         choose_quantity()
@@ -98,7 +96,7 @@ def create_and_open(pack_name, filename, mode):
     return open(filename, mode)
 
 
-def pack_number():
+def pack_number(selected_set):
     n = 1
     f = Path(str(n) + ' ' + selected_set)
     while os.path.exists(f):
@@ -111,7 +109,7 @@ def generate_packs(selected_set, quantity):
     while quantity > 0:
         counter = 1
         card = Set.generate_booster(selected_set)
-        current_pack = pack_number()
+        current_pack = pack_number(selected_set)
         for i in card:
             img_data = requests.get(
                 'http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=' +
@@ -119,7 +117,7 @@ def generate_packs(selected_set, quantity):
             with create_and_open(current_pack, current_pack + str(counter) + ' ' + str(i.name) + '.jpg', 'wb') as f:
                 f.write(img_data)
                 counter += 1
-    quantity -= 1
+        quantity -= 1
 
 
 def main():
@@ -129,9 +127,9 @@ def main():
     print("")
     the_loop = True
     while the_loop:
-        choose_set()
-        choose_quantity()
-        generate_packs(selected_set, number_of_packs)
+        set_holder = choose_set()
+        quantity_holder = choose_quantity()
+        generate_packs(set_holder, quantity_holder)
 
 
 main()
