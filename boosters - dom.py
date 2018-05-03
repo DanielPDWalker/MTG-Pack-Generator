@@ -5,6 +5,9 @@ import os
 import sys
 import time
 
+# || User input and Interface ||
+# ||||||||||||||||||||||||||||||
+
 
 class KeyboardDisable():
     """Makes an object with which you can disable keyboard input."""
@@ -24,9 +27,34 @@ class KeyboardDisable():
             msvcrt.getwch()
 
 
+def type_out(text):
+    """First disables keyboard input then prints out the passed
+    text's characters over time in the console/terminal window.
+    """
+    disable_typing.start()
+    text = text + "\n"
+    for c in text:
+        sys.stdout.write(c)
+        sys.stdout.flush()
+        time.sleep(0.01)
+    disable_typing.stop()
+
+
+def check_input(saved_input):
+    """Checks for yes and no awnsers from the user."""
+    if saved_input.lower() == "!yes":
+        return True
+    if saved_input.lower() == "!no":
+        return False
+
+
+
 # This sets the object to disable the keyboard. Used in type_out().
 disable_typing = KeyboardDisable()
 
+
+# || Generating Packs ||
+# ||||||||||||||||||||||
 
 def create_and_open(filename, mode):
     os.makedirs(current_pack, exist_ok=True)
