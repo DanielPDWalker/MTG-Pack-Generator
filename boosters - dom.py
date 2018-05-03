@@ -2,6 +2,30 @@ from mtgsdk import Set
 import requests
 from pathlib import Path
 import os
+import sys
+import time
+
+
+class KeyboardDisable():
+    """Makes an object with which you can disable keyboard input."""
+
+    def __init__(self):
+        self.on = False
+        import msvcrt
+
+    def start(self):
+        self.on = True
+
+    def stop(self):
+        self.on = False
+
+    def __call__(self):
+        while self.on:
+            msvcrt.getwch()
+
+
+# This sets the object to disable the keyboard. Used in type_out().
+disable_typing = KeyboardDisable()
 
 
 def create_and_open(filename, mode):
@@ -18,7 +42,8 @@ def pack_number():
     return str(n) + '/'
 
 
-card = Set.generate_booster('dom')
+selected_set = 'dom'
+card = Set.generate_booster(selected_set)
 current_pack = pack_number()
 
 
