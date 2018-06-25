@@ -8,6 +8,8 @@ MTG Pack Generator Example :
 * There are a few sets that dont work, but most do.
 * The packs are generated in the folder containing the script.
 * The script checks how many of each packs are in the folder and increment the counter before the name by 1 automatically.
+  
+The script works by using the python mtgsdk to generate random cards from a set, then using their multiverse ID (unique identification number), it uses requests to download the image of the card from the gatherer website.
 
 # Requirements  
 You can either use the setup.py file that comes with this project by going to the directory on your computer in CMD or Terminal and typing:
